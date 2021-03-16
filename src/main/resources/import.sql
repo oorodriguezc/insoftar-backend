@@ -1,0 +1,10 @@
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (1, 'Óscar Orlando', 'Rodríguez Cristancho', '11202733', 'oorodriguezc@gmail.com', '3115500964');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (2, 'Andrés', 'Pérez', '123456789', 'andres@gmail.com', '3114567890');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (3, 'Camila', 'García', '123456749', 'camila@gmail.com', '3114587890');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (4, 'Juan', 'Benavides', '163456749', 'juan@gmail.com', '3116587890');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (5, 'Ana', 'Rozo', '163476749', 'ana@gmail.com', '3116087890');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (6, 'Pedro', 'Ramos', '133476749', 'pedro@gmail.com', '3116087390');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (7, 'Juana', 'López', '733476749', 'juana@gmail.com', '3116037390');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (8, 'Miguel', 'Rodríguez', '633476749', 'miguel@gmail.com', '3117037390');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (9, 'Teresa', 'Cristancho', '833476749', 'teresa@gmail.com', '3117031390');
+INSERT INTO `insoftar`.`users` (`id`, `firstname`, `lastname`, `id_number`, `email`, `phone`) VALUES (10, 'Wilfredo', 'Sánchez', '333476749', 'will@gmail.com', '3117030390');
