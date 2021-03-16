@@ -10,8 +10,6 @@ import com.insoftar.rest.backend.insoftar.models.entities.User;
 import com.insoftar.rest.backend.insoftar.models.repositories.UserRepository;
 import com.insoftar.rest.backend.insoftar.models.services.UserService;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,7 +33,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     public static final ModelMapper modelMapper = new ModelMapper();
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -61,12 +58,9 @@ public class UserServiceImpl implements UserService {
         User userNew = new User();
         boolean update = false;
 
-        if (userDTO.getId() != null) {
-
-            if (this.userRepository.findById(userDTO.getId()).isPresent()) {
-                update = true;
-                userNew.setId(userDTO.getId());
-            }
+        if (userDTO.getId() != null && this.userRepository.findById(userDTO.getId()).isPresent()) {
+            update = true;
+            userNew.setId(userDTO.getId());
         }
 
         User userSearch = this.userRepository.findByEmail(userDTO.getEmail());
@@ -88,8 +82,7 @@ public class UserServiceImpl implements UserService {
         try {
             userCreated = this.userRepository.save(userNew);
         } catch (DataAccessException e) {
-            this.log.error(GeneralConstants.INTERNAL_SERVER_ERROR_TEXT, e);
-            throw new InternalServerErrorException(GeneralConstants.INTERNAL_SERVER_ERROR_TEXT, String.valueOf(e.getMostSpecificCause().getMessage()));
+            throw new InternalServerErrorException(GeneralConstants.INTERNAL_SERVER_ERROR_TEXT, String.valueOf(e.getMostSpecificCause()));
         }
 
         return modelMapper.map(userCreated, UserDTO.class);

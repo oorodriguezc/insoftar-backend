@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * <h1>InternalServerErrorException</h1>
@@ -16,17 +16,17 @@ import java.util.Arrays;
  * @since 14-03-2021
  */
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-public class InternalServerErrorException extends RestException{
+public class InternalServerErrorException extends RestException {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     public InternalServerErrorException(String code, String message) {
-        super(code, HttpStatus.INTERNAL_SERVER_ERROR.value(),message);
+        super(code, HttpStatus.INTERNAL_SERVER_ERROR.value(), message);
     }
 
     public InternalServerErrorException(String code, String message, ErrorDTO data) {
-        super(code,HttpStatus.INTERNAL_SERVER_ERROR.value(),message, Arrays.asList(data));
+        super(code, HttpStatus.INTERNAL_SERVER_ERROR.value(), message, Collections.singletonList(data));
     }
 
 }
