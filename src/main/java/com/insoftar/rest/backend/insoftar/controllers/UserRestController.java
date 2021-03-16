@@ -108,6 +108,8 @@ public class UserRestController {
 
         this.getUserResultBindingError(result);
 
+        userDTO.setId(id);
+
         return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.OK), GeneralConstants.OK_TEXT, this.userService.save(userDTO));
     }
 
