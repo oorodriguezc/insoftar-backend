@@ -19,3 +19,7 @@ spring:
   jackson:
     locale: es_CO
     time-zone: America/Bogota
+insoftar:
+  app:
+    poweredby: Insoftar S.A.S.
+    version: 0.1.0-alpha
