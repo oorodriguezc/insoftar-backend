@@ -6,20 +6,18 @@ import com.insoftar.rest.backend.insoftar.exceptions.InternalServerErrorExceptio
 import com.insoftar.rest.backend.insoftar.exceptions.NotFountException;
 import com.insoftar.rest.backend.insoftar.exceptions.RestException;
 import com.insoftar.rest.backend.insoftar.models.dto.UserDTO;
+import com.insoftar.rest.backend.insoftar.models.dto.converters.UserConverter;
+import com.insoftar.rest.backend.insoftar.models.dto.mapper.UserMapper;
 import com.insoftar.rest.backend.insoftar.models.entities.User;
 import com.insoftar.rest.backend.insoftar.models.repositories.UserRepository;
 import com.insoftar.rest.backend.insoftar.models.services.UserService;
-import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * <h1>UserServiceImpl</h1>
@@ -32,24 +30,20 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    public static final ModelMapper modelMapper = new ModelMapper();
     private final UserRepository userRepository;
+    private final UserConverter userConverter;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.userConverter = new UserConverter();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
-
         Page<User> users = this.userRepository.findAll(pageable);
-        List<UserDTO> userDTOList = users
-                .stream()
-                .map(service -> modelMapper.map(service, UserDTO.class))
-                .collect(Collectors.toList());
 
-        return new PageImpl<>(userDTOList);
+        return this.userConverter.toDTOPage(pageable, users);
     }
 
     @Override
@@ -85,12 +79,19 @@ public class UserServiceImpl implements UserService {
             throw new InternalServerErrorException(GeneralConstants.INTERNAL_SERVER_ERROR_TEXT, String.valueOf(e.getMostSpecificCause()));
         }
 
-        return modelMapper.map(userCreated, UserDTO.class);
+        return UserMapper.INSTANCE.toDto(userCreated);
     }
 
     @Override
     public UserDTO findById(Long id) throws RestException {
-        return modelMapper.map(this.getUserEntity(id), UserDTO.class);
+        User user = this.getUserEntity(id);
+
+        if (user == null) {
+
+            return null;
+        }
+
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
@@ -101,6 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User getUserEntity(Long id) throws RestException {
+
         return this.userRepository.findById(id).orElseThrow(() -> new NotFountException("UNF-404", "USER_NOT_FOUND"));
     }
 
