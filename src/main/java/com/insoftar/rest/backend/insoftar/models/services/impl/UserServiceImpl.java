@@ -1,10 +1,6 @@
 package com.insoftar.rest.backend.insoftar.models.services.impl;
 
 import com.insoftar.rest.backend.insoftar.config.constants.GeneralConstants;
-import com.insoftar.rest.backend.insoftar.exceptions.BadRequestException;
-import com.insoftar.rest.backend.insoftar.exceptions.InternalServerErrorException;
-import com.insoftar.rest.backend.insoftar.exceptions.NotFountException;
-import com.insoftar.rest.backend.insoftar.exceptions.RestException;
 import com.insoftar.rest.backend.insoftar.models.dto.UserDTO;
 import com.insoftar.rest.backend.insoftar.models.dto.converters.UserConverter;
 import com.insoftar.rest.backend.insoftar.models.dto.mapper.UserMapper;
@@ -14,8 +10,10 @@ import com.insoftar.rest.backend.insoftar.models.services.UserService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO save(UserDTO userDTO) throws RestException {
+    public UserDTO save(UserDTO userDTO) {
         User userCreated;
         User userNew = new User();
         boolean update = false;
@@ -59,12 +57,12 @@ public class UserServiceImpl implements UserService {
 
         User userSearch = this.userRepository.findByEmail(userDTO.getEmail());
         if (userSearch != null && !update) {
-            throw new BadRequestException(GeneralConstants.EMAIL_ALREADT_EXIST_TEXT, GeneralConstants.EMAIL_ALREADT_EXIST_TEXT);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, GeneralConstants.EMAIL_ALREADY_EXIST_TEXT);
         }
 
         userSearch = this.userRepository.findByIdNumber(userDTO.getIdNumber());
         if (userSearch != null && !update) {
-            throw new BadRequestException(GeneralConstants.ID_NUMBER_ALREADT_EXIST_TEXT, GeneralConstants.ID_NUMBER_ALREADT_EXIST_TEXT);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, GeneralConstants.ID_NUMBER_ALREADT_EXIST_TEXT);
         }
 
         userNew.setFirstname(userDTO.getFirstname());
@@ -76,14 +74,14 @@ public class UserServiceImpl implements UserService {
         try {
             userCreated = this.userRepository.save(userNew);
         } catch (DataAccessException e) {
-            throw new InternalServerErrorException(GeneralConstants.INTERNAL_SERVER_ERROR_TEXT, String.valueOf(e.getMostSpecificCause()));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.valueOf(e.getMostSpecificCause()), e);
         }
 
         return UserMapper.INSTANCE.toDto(userCreated);
     }
 
     @Override
-    public UserDTO findById(Long id) throws RestException {
+    public UserDTO findById(Long id) {
         User user = this.getUserEntity(id);
 
         if (user == null) {
@@ -95,15 +93,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) throws RestException {
+    public void deleteById(Long id) {
         if (Optional.ofNullable(this.getUserEntity(id)).isPresent()) {
             this.userRepository.deleteById(id);
         }
     }
 
-    private User getUserEntity(Long id) throws RestException {
+    private User getUserEntity(Long id) {
 
-        return this.userRepository.findById(id).orElseThrow(() -> new NotFountException("UNF-404", "USER_NOT_FOUND"));
+        return this.userRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, GeneralConstants.USER_NOT_FOUND_TEXT)
+        );
     }
 
 }

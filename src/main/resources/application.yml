@@ -19,7 +19,11 @@ spring:
   jackson:
     locale: es_CO
     time-zone: America/Bogota
+server:
+  error:
+    include-stacktrace: on_trace_param
 insoftar:
   app:
     poweredby: Insoftar S.A.S.
     version: 0.1.0-alpha
+

@@ -22,19 +22,16 @@ public class RestResponse<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String status;
-    private final String code;
     private final String message;
     private T data;
 
-    public RestResponse(String status, String code, String message) {
+    public RestResponse(String status, String message) {
         this.status = status;
-        this.code = code;
         this.message = message;
     }
 
-    public RestResponse(String status, String code, String message, T data) {
+    public RestResponse(String status, String message, T data) {
         this.status = status;
-        this.code = code;
         this.message = message;
         this.data = data;
     }

@@ -1,7 +1,6 @@
 package com.insoftar.rest.backend.insoftar.controllers;
 
 import com.insoftar.rest.backend.insoftar.config.constants.GeneralConstants;
-import com.insoftar.rest.backend.insoftar.exceptions.RestException;
 import com.insoftar.rest.backend.insoftar.models.dto.UserDTO;
 import com.insoftar.rest.backend.insoftar.models.services.UserService;
 import com.insoftar.rest.backend.insoftar.responses.RestResponse;
@@ -14,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -48,18 +48,17 @@ public class UserRestController {
      * @param page Número de la página a consultar
      * @param size Tamaño de la página a consultar
      * @return Retorna un paginable con el resultado de la consulta
-     * @throws RestException Controla con la excepción para la respuesta REST
      */
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
     public RestResponse<Page<UserDTO>> index(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
-    ) throws RestException {
+    ) {
         Pageable pageRequest = PageRequest.of(page, size, Sort.by("id").ascending());
 
         Page<UserDTO> data = this.userService.findAll(pageRequest);
 
-        return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.OK), GeneralConstants.OK_TEXT, data);
+        return new RestResponse<>(String.valueOf(HttpStatus.OK), GeneralConstants.USERS_FOUND_TEXT, data);
     }
 
     /**
@@ -69,9 +68,9 @@ public class UserRestController {
      * @return Retorno del ResponseEntity con los datos de respuesta y el estado
      */
     @GetMapping("/{id}")
-    public RestResponse<UserDTO> show(@PathVariable Long id) throws RestException {
+    public RestResponse<UserDTO> show(@PathVariable Long id) {
 
-        return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.OK), GeneralConstants.OK_TEXT, this.userService.findById(id));
+        return new RestResponse<>(String.valueOf(HttpStatus.OK), GeneralConstants.USER_FOUND_TEXT, this.userService.findById(id));
     }
 
     /**
@@ -83,11 +82,11 @@ public class UserRestController {
      * @return Retorno del ResponseEntity con los datos de respuesta y el estado
      */
     @PostMapping("")
-    public RestResponse<UserDTO> create(@Valid @RequestBody UserDTO userDTO, BindingResult result) throws RestException {
+    public RestResponse<UserDTO> create(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
 
         this.getUserResultBindingError(result);
 
-        return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.CREATED), GeneralConstants.OK_TEXT, this.userService.save(userDTO));
+        return new RestResponse<>(String.valueOf(HttpStatus.CREATED), GeneralConstants.USER_CREATED_TEXT, this.userService.save(userDTO));
     }
 
     /**
@@ -99,18 +98,18 @@ public class UserRestController {
      * @return Retorno del ResponseEntity con los datos de respuesta y el estado
      */
     @PutMapping("/{id}")
-    public RestResponse<UserDTO> update(@Valid @RequestBody UserDTO userDTO, @PathVariable Long id, BindingResult result) throws RestException {
+    public RestResponse<UserDTO> update(@Valid @RequestBody UserDTO userDTO, @PathVariable Long id, BindingResult result) {
 
         UserDTO userDTOActual = this.userService.findById(id);
         if (userDTOActual == null) {
-            return new RestResponse<>(GeneralConstants.USER_NOT_FOUND_TEXT, String.valueOf(HttpStatus.NOT_FOUND), GeneralConstants.USER_NOT_FOUND_TEXT);
+            return new RestResponse<>(String.valueOf(HttpStatus.NOT_FOUND), GeneralConstants.USER_NOT_FOUND_TEXT);
         }
 
         this.getUserResultBindingError(result);
 
         userDTO.setId(id);
 
-        return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.OK), GeneralConstants.OK_TEXT, this.userService.save(userDTO));
+        return new RestResponse<>(String.valueOf(HttpStatus.OK), GeneralConstants.USER_UPDATED_TEXT, this.userService.save(userDTO));
     }
 
     /**
@@ -120,17 +119,19 @@ public class UserRestController {
      * @return Retorno del ResponseEntity con los datos de respuesta y el estado
      */
     @DeleteMapping("/{id}")
-    public RestResponse<Object> delete(@PathVariable Long id) throws RestException {
+    public RestResponse<Object> delete(@PathVariable Long id) {
 
         this.userService.deleteById(id);
 
-        return new RestResponse<>(GeneralConstants.SUCCESS_TEXT, String.valueOf(HttpStatus.OK), GeneralConstants.OK_TEXT);
+        return new RestResponse<>(HttpStatus.OK.toString(), GeneralConstants.USER_DELETED_TEXT);
     }
 
-    private void getUserResultBindingError(BindingResult result) throws RestException {
+    private void getUserResultBindingError(BindingResult result) {
         if (result.hasErrors()) {
             for (FieldError results : result.getFieldErrors()) {
-                throw new RestException(results.getCode(), HttpStatus.BAD_REQUEST.value(), Objects.requireNonNull(results.getDefaultMessage()).toUpperCase());
+                if (result.hasErrors()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Objects.requireNonNull(results.getDefaultMessage()));
+                }
             }
         }
     }
