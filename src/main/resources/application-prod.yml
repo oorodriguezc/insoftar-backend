@@ -1,0 +1,32 @@
+########################################################
+## !!! WARNING !!! ATENCION !!!                       ##
+## Application Properties Basic Configuration         ##
+## author: Oscar Rodriguez <oorodriguezc@gmail.com>   ##
+##                                                    ##
+## MODIFY THIS FILE UNDER YOUR RESPONSIBILITY         ##
+## MODIFIQUE ESTE ARCHIVO BAJO SU RESPONSABILIDAD     ##
+########################################################
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/insoftar?serverTimezone=America/Bogota
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+logging:
+  level:
+    org.springframework.web: info
+    org.hibernate.SQL: info
+  file:
+    name: logs/insoftar-application.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB

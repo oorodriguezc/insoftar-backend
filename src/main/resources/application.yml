@@ -1,21 +1,20 @@
+########################################################
+## !!! WARNING !!! ATENCION !!!                       ##
+## Application Properties Basic Configuration         ##
+## author: Oscar Rodriguez <oorodriguezc@gmail.com>   ##
+##                                                    ##
+## MODIFY THIS FILE UNDER YOUR RESPONSIBILITY         ##
+## MODIFIQUE ESTE ARCHIVO BAJO SU RESPONSABILIDAD     ##
+########################################################
 spring:
+  profiles:
+    active: dev
   application:
     name: Insoftar Backend
   jpa:
     hibernate:
       use-new-id-generator-mappings: true
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: false
-    database-platform: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false
-  datasource:
-    url: jdbc:mysql://localhost:3306/insoftar?serverTimezone=America/Bogota
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     locale: es_CO
     time-zone: America/Bogota
