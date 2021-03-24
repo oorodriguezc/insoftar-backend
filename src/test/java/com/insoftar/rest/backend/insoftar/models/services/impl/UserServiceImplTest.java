@@ -73,7 +73,7 @@ class UserServiceImplTest {
     void findAll() {
         List<User> userList = new ArrayList<>();
         userList.add(USER);
-        Page<User> userPage = new PageImpl(userList);
+        PageImpl<User> userPage = new PageImpl<>(userList);
 
         Pageable pageRequest = PageRequest.of(PAGE_REQUEST, SIZE_REQUEST, Sort.by("id").ascending());
         Mockito.when(this.userRepository.findAll(pageRequest)).thenReturn(userPage);
@@ -164,7 +164,7 @@ class UserServiceImplTest {
     void findByIdNotFound() {
         Mockito.when(this.userRepository.findById(USER.getId())).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> this.userService.findById(USER.getId()));
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> this.userService.findById(USER_ID));
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         Assertions.assertEquals(GeneralConstants.USER_NOT_FOUND_TEXT, exception.getReason());
@@ -186,7 +186,7 @@ class UserServiceImplTest {
     void deleteByIdNotFound() {
         Mockito.when(this.userRepository.findById(USER.getId())).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> this.userService.findById(USER.getId()));
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> this.userService.findById(USER_ID));
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         Assertions.assertEquals(GeneralConstants.USER_NOT_FOUND_TEXT, exception.getReason());
