@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
         userSearch = this.userRepository.findByIdNumber(userDTO.getIdNumber());
         if (userSearch != null && !update) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, GeneralConstants.ID_NUMBER_ALREADT_EXIST_TEXT);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, GeneralConstants.ID_NUMBER_ALREADY_EXIST_TEXT);
         }
 
         userNew.setFirstname(userDTO.getFirstname());
@@ -83,11 +83,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findById(Long id) {
         User user = this.getUserEntity(id);
-
-        if (user == null) {
-
-            return null;
-        }
 
         return UserMapper.INSTANCE.toDto(user);
     }

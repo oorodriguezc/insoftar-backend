@@ -17,13 +17,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class UserRestControllerTest {
 
-    private static final int PAGE_REQUEST = 5;
-    private static final int SIZE_REQUEST = 5;
     private static final String RESPONSE_OK_CODE = "200 OK";
     private static final String RESPONSE_CREATED_CODE = "201 CREATED";
+
+    private static final int PAGE_REQUEST = 5;
+    private static final int SIZE_REQUEST = 5;
+
     private static final UserDTO USER_DTO = new UserDTO();
     private static final Long USER_ID = 12L;
     private static final String USER_FIRSTNAME = "John";
@@ -63,6 +67,7 @@ class UserRestControllerTest {
         RestResponse<Page<UserDTO>> response = this.userRestController.index(PAGE_REQUEST, SIZE_REQUEST);
         assertEquals(RESPONSE_OK_CODE, response.getStatus());
         assertEquals(GeneralConstants.USERS_FOUND_TEXT, response.getMessage());
+        verify(this.userService, times(1)).findAll(pageRequest);
     }
 
     @Test
@@ -72,6 +77,7 @@ class UserRestControllerTest {
         RestResponse<UserDTO> response = this.userRestController.show(USER_ID);
         assertEquals(RESPONSE_OK_CODE, response.getStatus());
         assertEquals(GeneralConstants.USER_FOUND_TEXT, response.getMessage());
+        verify(this.userService, times(1)).findById(USER_ID);
     }
 
     @Test
@@ -81,6 +87,7 @@ class UserRestControllerTest {
         RestResponse<UserDTO> response = this.userRestController.create(USER_DTO, this.bindingResult);
         assertEquals(RESPONSE_CREATED_CODE, response.getStatus());
         assertEquals(GeneralConstants.USER_CREATED_TEXT, response.getMessage());
+        verify(this.userService, times(1)).save(USER_DTO);
     }
 
     @Test
@@ -91,6 +98,8 @@ class UserRestControllerTest {
         RestResponse<UserDTO> response = this.userRestController.update(USER_DTO, USER_ID, this.bindingResult);
         assertEquals(RESPONSE_OK_CODE, response.getStatus());
         assertEquals(GeneralConstants.USER_UPDATED_TEXT, response.getMessage());
+        verify(this.userService, times(1)).findById(USER_ID);
+        verify(this.userService, times(1)).save(USER_DTO);
     }
 
     @Test
